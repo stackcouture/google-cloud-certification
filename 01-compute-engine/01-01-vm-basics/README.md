@@ -719,6 +719,349 @@ Confirm that the remaining permissions match the intended original configuration
 **Current result:** Sudo access has been successfully restored on the GCP Ubuntu VM. Post-recovery cleanup remains necessary before considering the troubleshooting process fully complete.
 
 ---
+## Step 06: GCP Compute Engine – Web Server Deployment and VM Management
+
+### Step 07: Upload and Execute the Web Server Installation Script
+
+#### 7.1 Identify VM Hostname and IP Address
+
+Connect to the VM using SSH-in-browser and execute the following commands:
+
+```bash
+# Display VM hostname
+hostname
+
+# Display network interface details and IP addresses
+ip -s addr
+```
+
+**Observation:**
+
+- Identify and record the VM hostname.
+- Identify and record the internal IP address.
+- Note the external IP address from the Google Cloud Console.
+
+#### 7.2 Upload the Installation Script
+
+Upload the `webserver-install.sh` file to the VM using the SSH-in-browser file upload functionality.
+
+#### 7.3 Grant Execution Permissions
+
+```bash
+chmod 755 webserver-install.sh
+```
+
+#### 7.4 Execute the Web Server Installation Script
+
+```bash
+./webserver-install.sh
+```
+
+The script installs and configures the web server and deploys the application files.
+
+#### 7.5 Verify Application Files
+
+Navigate to the web server document root:
+
+```bash
+cd /var/www/html
+
+# List application files
+ls -l
+
+# Navigate to the application directory
+cd app1
+
+# Verify application files
+ls -l
+```
+
+**Expected Result:**
+
+- Web server installation completes successfully.
+- Application files are available under `/var/www/html/app1`.
+- The application directory contains the expected deployment files.
+
+---
+## Step 08: Access the Web Server Application
+
+Open a browser and access the application using the VM's external IP address.
+
+```text
+http://<EXTERNAL-IP-OF-VM>
+```
+
+**Observation:**
+
+- The web server should respond to HTTP requests.
+- The deployed application page should be accessible through the browser.
+- Verify that the application content loads successfully.
+
+<text color="secondary" size="xs">Replace the placeholder with the actual external IP address assigned to the VM.</text>
+
+---
+## Step 09: Manage VM Instance – Available VM Actions
+
+Navigate to:
+
+**Google Cloud Console → Compute Engine → VM Instances → demo1-vm → Actions**
+
+Review the following VM management operations.
+
+### 9.1 VM Stop
+
+- Stops the running VM instance.
+- Performs a graceful shutdown when possible.
+- If the guest OS does not shut down within the allowed period, Compute Engine can force the instance to stop.
+- An unclean shutdown can potentially cause filesystem corruption.
+
+### 9.2 VM Start
+
+- Starts a previously stopped VM instance.
+- The VM boots using its existing boot disk and configuration.
+- The external IP address may change if an ephemeral IP address is assigned.
+
+### 9.3 VM Suspend
+
+- Suspends the VM while preserving its running state.
+- Similar to putting a physical computer into sleep mode.
+- The suspended memory state is stored on disk.
+- Suspending and resuming can take several minutes.
+- Charges may apply for the stored memory state and persistent disks.
+- The VM is not accessible while suspended.
+
+### 9.4 VM Resume
+
+- Resumes a previously suspended VM.
+- Restores the VM from its preserved suspended state.
+- The VM continues from its previous execution state.
+
+### 9.5 VM Reset
+
+- Performs a hard reset of the VM.
+- Resets the virtual machine without performing a graceful guest OS shutdown.
+- Clears the contents of system memory.
+- Unsaved data in memory may be lost.
+- An unclean reset can potentially cause filesystem corruption.
+
+### 9.6 VM Delete
+
+- Deletes the VM instance.
+- Review the associated disk deletion settings before confirming.
+- Persistent disks may be retained or deleted depending on the deletion configuration.
+
+### 9.7 View Network Details
+
+Navigate to the VM's network interface details to review:
+
+- **Network Interface Details:** Review the VM's network interfaces, IP addresses, and associated network configuration.
+- **VM Instance Details:** Review the VM's configuration and networking information.
+- **Firewall Rules:** Review the firewall rules controlling inbound and outbound traffic.
+- **Network Analysis:** Inspect network connectivity and troubleshoot communication issues.
+
+### 9.8 Create New Machine Image
+
+- Explore the option to create a machine image from the VM.
+- A dedicated demonstration will cover this functionality.
+
+### 9.9 View Logs
+
+- Review VM-related logs.
+- A dedicated demonstration will cover log monitoring and troubleshooting.
+
+### 9.10 View Monitoring
+
+- Explore VM monitoring metrics and observability information.
+- A dedicated demonstration will cover monitoring functionality.
+
+### 9.11 Verify VM Instance ID
+
+- Locate and review the unique VM Instance ID.
+- Understand how the instance ID identifies the VM within Google Cloud.
+
+---
+## Step 10: Perform VM Actions – Suspend and Resume
+
+### 10.1 Suspend the VM
+
+Navigate to:
+
+**Compute Engine → VM Instances → demo1-vm → Actions → Suspend**
+
+- Select **Suspend**.
+- Wait for the suspend operation to complete.
+- Verify the successful operation through the Cloud Console notification.
+
+### 10.2 Resume the VM
+
+Navigate to:
+
+**Compute Engine → VM Instances → demo1-vm → Actions → Start / Resume**
+
+- Select the resume operation.
+- Wait until the VM becomes available.
+- Verify that SSH connectivity is restored.
+
+### 10.3 Verify External IP Address
+
+Compare the external IP address before and after the suspend/resume operation.
+
+**Observation:**
+
+- An ephemeral external IP address is not guaranteed to remain unchanged.
+- Record the IP address before and after the operation and verify the actual result.
+
+---
+## Step 11: Perform VM Action – Reset
+
+### 11.1 Reset the VM
+
+Navigate to:
+
+**Compute Engine → VM Instances → demo1-vm → Actions → Reset**
+
+- Select **Reset**.
+- Confirm the operation.
+- Wait for the VM to become available again.
+
+**Observation:**
+
+- Reset performs a hard reset of the VM.
+- System memory contents are cleared.
+- Unsaved in-memory data may be lost.
+- Persistent disk data is generally retained, but an unclean reset can risk filesystem corruption.
+
+### 11.2 Verify Web Server Availability
+
+After the VM becomes operational, access the application again:
+
+```text
+http://<EXTERNAL-IP-OF-VM>
+```
+
+**Expected Result:**
+
+- The VM should be accessible.
+- The web server should be running.
+- The application page should load successfully.
+
+---
+## Step 12: Review VM Settings After Creation
+
+Navigate to:
+
+**Compute Engine → VM Instances → demo1-vm**
+
+Review the following tabs:
+
+### 12.1 Details Tab
+
+Review:
+
+- VM instance name and ID.
+- Machine configuration.
+- CPU and memory.
+- Boot disk configuration.
+- Network interfaces.
+- Internal and external IP addresses.
+- Instance status and zone.
+
+### 12.2 Observability Tab
+
+Review available monitoring and observability information, including VM performance metrics.
+
+### 12.3 Screenshots Tab
+
+Explore the screenshot functionality and review available VM screenshots, where supported.
+
+---
+## Step 13: Stop the VM to Avoid Unnecessary Charges
+
+Navigate to:
+
+**Compute Engine → VM Instances → demo1-vm → Stop**
+
+### Procedure
+
+1. Select the VM instance.
+2. Click **Stop**.
+3. Confirm the stop operation.
+4. Wait until the VM status changes to `TERMINATED`.
+5. Verify the operation using the notification displayed in the Cloud Console.
+
+**Additional Observations:**
+
+- A stopped VM does not incur normal running-instance compute charges.
+- Persistent disk storage and other retained resources may continue to incur charges.
+- An ephemeral external IP address is released when the VM is stopped.
+- A subsequent VM start may assign a different external IP address.
+- A reserved static external IP address behaves differently and can remain allocated.
+
+---
+## Step 14: Locate and Review the VM Boot Disk
+
+Navigate to:
+
+**Compute Engine → Storage → Disks → demo1-vm**
+
+Select the boot disk associated with the VM.
+
+Review the following sections:
+
+### 14.1 Details Tab
+
+Inspect:
+
+- Disk name.
+- Disk type.
+- Disk size.
+- Disk status.
+- Zone.
+- Attached VM instance.
+- Boot disk configuration.
+- Provisioning and encryption details.
+
+### 14.2 Monitoring Tab
+
+Review available disk monitoring metrics, such as:
+
+- Disk read operations.
+- Disk write operations.
+- Read throughput.
+- Write throughput.
+- Disk performance information.
+
+**Observation:**
+
+Understand how Compute Engine manages persistent disks independently of the VM's running state.
+
+---
+## References
+
+1. [Google Cloud – Suspend and Resume a VM Instance](https://cloud.google.com/compute/docs/instances/suspend-resume-instance)
+2. [Google Cloud – Suspend and Resume OS Compatibility](https://cloud.google.com/compute/docs/instances/suspend-resume-instance#os_compatibility)
+3. [Google Cloud – Stop and Start a VM](https://cloud.google.com/compute/docs/instances/stop-start-instance)
+4. [Google Cloud – Reset a VM](https://cloud.google.com/compute/docs/instances/reset-instance)
+5. [Google Cloud – VM Instance Lifecycle](https://cloud.google.com/compute/docs/instances/instance-lifecycle)
+6. [Google Cloud – Persistent Disk Documentation](https://cloud.google.com/compute/docs/disks)
+
+---
+## Practical Learning Outcomes
+
+After completing these steps, you should be able to:
+
+- Upload and execute shell scripts on a GCP Ubuntu VM.
+- Install and configure a web server.
+- Deploy and verify a web application.
+- Access an application using an external IP address.
+- Understand VM lifecycle operations.
+- Perform suspend, resume, reset, stop, and start operations.
+- Inspect VM configuration and monitoring information.
+- Understand ephemeral versus static external IP addresses.
+- Locate and inspect persistent boot disks.
+- Understand the relationship between VM lifecycle operations and resource billing.
+
+---
 ### Author Notes
 
 **Platform:** Google Cloud Platform  
